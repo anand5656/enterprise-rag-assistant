@@ -8,3 +8,4 @@ python-dotenv
 groq
 pypdf
 python-docx
+scikit-learn
