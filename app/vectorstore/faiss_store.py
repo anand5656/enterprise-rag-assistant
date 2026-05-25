@@ -2,59 +2,63 @@ import faiss
 import numpy as np
 
 from app.services.embeddings import (
-    embedding_model
+    embed_documents
 )
 
 
-document_store = []
+dimension = 1000
+
+search_index = faiss.IndexFlatL2(
+    dimension
+)
 
 metadata_store = []
 
 
-dimension = 384
-
-
-index = faiss.IndexFlatL2(
-    dimension
-)
-
-
-def add_documents(
-    text_chunks,
-    filename
+def add_to_index(
+    chunks,
+    sources
 ):
 
-    global document_store
-    global metadata_store
+    texts = [
+        chunk
+        for chunk in chunks
+    ]
 
-    embeddings = embedding_model.encode(
-        text_chunks
+    embeddings = embed_documents(
+        texts
     )
 
-    index.add(
-        np.array(embeddings)
+    embeddings = np.array(
+        embeddings
+    ).astype("float32")
+
+
+    global search_index
+
+    if search_index.ntotal == 0:
+
+        dimension = embeddings.shape[1]
+
+        search_index = faiss.IndexFlatL2(
+            dimension
+        )
+
+    search_index.add(
+        embeddings
     )
 
-    for i, chunk in enumerate(text_chunks):
 
-        document_store.append(chunk)
+    for chunk, source in zip(
+        chunks,
+        sources
+    ):
 
         metadata_store.append({
 
-            "source": filename,
+            "text": chunk,
 
-            "chunk": i + 1
+            "source": source["source"],
+
+            "chunk": source["chunk"]
         })
-
-
-def search_index(
-    query_embedding,
-    top_k=3
-):
-
-    distances, indices = index.search(
-        np.array(query_embedding),
-        top_k
-    )
-
-    return indices[0]
