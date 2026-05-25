@@ -1,13 +1,11 @@
+import numpy as np
+
 from app.services.embeddings import (
-    embedding_model
+    embed_text
 )
 
 from app.vectorstore.faiss_store import (
-
     search_index,
-
-    document_store,
-
     metadata_store
 )
 
@@ -17,35 +15,24 @@ def retrieve_chunks(
     top_k=3
 ):
 
-    if len(document_store) == 0:
-
-        return []
-
-    query_embedding = embedding_model.encode(
+    query_embedding = embed_text(
         [query]
     )
 
-    indices = search_index(
-        query_embedding,
+    distances, indices = search_index.search(
+        np.array(query_embedding).astype("float32"),
         top_k
     )
 
-    retrieved = []
+    results = []
 
-    for idx in indices:
+    for idx in indices[0]:
 
-        if (
-            idx >= 0 and
-            idx < len(document_store)
-        ):
+        if idx < len(metadata_store):
 
-            retrieved.append({
-
-                "text":
-                    document_store[idx],
-
-                "source":
-                    metadata_store[idx]
+            results.append({
+                "text": metadata_store[idx]["text"],
+                "source": metadata_store[idx]
             })
 
-    return retrieved
+    return results
