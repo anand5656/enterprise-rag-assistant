@@ -1,0 +1,22 @@
+[
+  {
+    "title": "Reset Password",
+    "content": "Users can reset their password from Settings > Security."
+  },
+  {
+    "title": "Account Deletion",
+    "content": "Users can delete their account from Account Settings."
+  },
+  {
+    "title": "Subscription Plans",
+    "content": "We offer Free, Pro, and Enterprise subscription plans."
+  },
+  {
+    "title": "Refund Policy",
+    "content": "Refund requests must be submitted within 7 days of purchase."
+  },
+  {
+    "title": "Two Factor Authentication",
+    "content": "Users can enable two-factor authentication from Security Settings."
+  }
+]

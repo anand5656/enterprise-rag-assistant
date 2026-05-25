@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Production-Grade GenAI Assistant
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="styles.css"
+    >
+
+</head>
+
+<body>
+
+    <div class="app-container">
+
+        <!-- SIDEBAR -->
+
+        <aside class="sidebar">
+
+            <h2>
+                GenAI Assistant
+            </h2>
+
+            <p class="tagline">
+                Production-Grade RAG Chatbot
+            </p>
+
+            <div class="tech-stack">
+
+                <h3>Tech Stack</h3>
+
+                <div class="badges">
+
+                    <span>FastAPI</span>
+                    <span>FAISS</span>
+                    <span>Groq</span>
+                    <span>Python</span>
+                    <span>RAG</span>
+                    <span>LLM</span>
+
+                </div>
+
+            </div>
+
+            <div class="features">
+
+                <h3>Features</h3>
+
+                <ul>
+
+                    <li>Vector Similarity Search</li>
+
+                    <li>Conversation Memory</li>
+
+                    <li>Semantic Retrieval</li>
+
+                    <li>AI Response Generation</li>
+
+                    <li>PDF/DOCX/TXT Upload</li>
+
+                    <li>Source Citations</li>
+
+                </ul>
+
+            </div>
+
+        </aside>
+
+
+        <!-- CHAT SECTION -->
+
+        <main class="chat-section">
+
+            <div class="chat-header">
+
+                <h1>
+                    AI Knowledge Assistant
+                </h1>
+
+                <p>
+                    Ask anything using Retrieval-Augmented Generation
+                </p>
+
+            </div>
+
+
+            <!-- CHAT BOX -->
+
+            <div id="chat-box"></div>
+
+
+            <!-- CLEAR CHAT -->
+
+            <button
+                id="clear-btn"
+                class="clear-btn"
+            >
+                Clear Chat
+            </button>
+
+
+            <!-- INPUT AREA -->
+
+            <div class="input-area">
+
+                <input
+                    type="file"
+                    id="fileInput"
+                >
+
+                <button
+                    class="upload"
+                    onclick="uploadFile()"
+                >
+                    Upload
+                </button>
+
+                <input
+                    type="text"
+                    id="message"
+                    placeholder="Ask a question..."
+                >
+
+                <button
+                    onclick="sendMessage()"
+                >
+                    Send
+                </button>
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <script src="app.js"></script>
+
+</body>
+
+</html>
