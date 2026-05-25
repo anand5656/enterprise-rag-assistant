@@ -11,9 +11,27 @@ from app.utils.memory import (
 
 
 def chat(session_id, message):
+   
 
     # Retrieve relevant chunks
     retrieved_chunks = retrieve_chunks(message)
+
+    if not retrieved_chunks:
+
+        return {
+
+            "reply": (
+                "No documents uploaded yet. "
+                "Please upload a PDF, DOCX, or TXT file first."
+                    ),
+
+                    "sources": [],
+
+                    "retrievedChunks": 0,
+
+                    "tokensUsed": 0
+                }
+                
 
     # Build context
     context = "\n".join([

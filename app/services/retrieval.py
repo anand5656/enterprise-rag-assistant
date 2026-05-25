@@ -15,8 +15,20 @@ def retrieve_chunks(
     top_k=3
 ):
 
+    if search_index is None:
+
+        return []
+
+    if len(metadata_store) == 0:
+
+        return []
+
     query_embedding = embed_query(
         query
+    )
+
+    query_embedding = np.array(
+        query_embedding
     ).astype("float32")
 
     distances, indices = search_index.search(
@@ -31,7 +43,9 @@ def retrieve_chunks(
         if idx < len(metadata_store):
 
             results.append({
+
                 "text": metadata_store[idx]["text"],
+
                 "source": metadata_store[idx]
             })
 
