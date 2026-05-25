@@ -1,7 +1,7 @@
 import numpy as np
 
 from app.services.embeddings import (
-    embed_text
+    embed_query
 )
 
 from app.vectorstore.faiss_store import (
@@ -15,12 +15,12 @@ def retrieve_chunks(
     top_k=3
 ):
 
-    query_embedding = embed_text(
-        [query]
-    )
+    query_embedding = embed_query(
+        query
+    ).astype("float32")
 
     distances, indices = search_index.search(
-        np.array(query_embedding).astype("float32"),
+        query_embedding,
         top_k
     )
 
