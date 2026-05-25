@@ -6,11 +6,7 @@ from app.services.embeddings import (
 )
 
 
-dimension = 1000
-
-search_index = faiss.IndexFlatL2(
-    dimension
-)
+search_index = None
 
 metadata_store = []
 
@@ -19,6 +15,8 @@ def add_to_index(
     chunks,
     sources
 ):
+
+    global search_index
 
     texts = [
         chunk
@@ -34,11 +32,9 @@ def add_to_index(
     ).astype("float32")
 
 
-    global search_index
+    dimension = embeddings.shape[1]
 
-    if search_index.ntotal == 0:
-
-        dimension = embeddings.shape[1]
+    if search_index is None:
 
         search_index = faiss.IndexFlatL2(
             dimension
