@@ -1,17 +1,23 @@
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sentence_transformers import SentenceTransformer
 
-vectorizer = TfidfVectorizer()
+model = SentenceTransformer(
+    "all-MiniLM-L6-v2"
+)
 
 
-def embed_documents(texts):
+def embed_texts(texts):
 
-    vectors = vectorizer.fit_transform(texts)
+    embeddings = model.encode(
+        texts
+    )
 
-    return vectors.toarray()
+    return embeddings.tolist()
 
 
 def embed_query(query):
 
-    vector = vectorizer.transform([query])
+    embedding = model.encode(
+        query
+    )
 
-    return vector.toarray()
+    return embedding.tolist()
