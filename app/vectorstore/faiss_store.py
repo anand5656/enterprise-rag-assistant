@@ -1,31 +1,16 @@
-import os
-import pickle
 import faiss
 import numpy as np
 
-INDEX_PATH = "faiss.index"
-DOCS_PATH = "documents.pkl"
-
-dimension = 384
-
-index = faiss.IndexFlatL2(dimension)
+from app.services.embeddings import embed_texts
 
 documents = []
 
-
-if os.path.exists(INDEX_PATH):
-    index = faiss.read_index(INDEX_PATH)
-
-if os.path.exists(DOCS_PATH):
-    with open(DOCS_PATH, "rb") as f:
-        documents = pickle.load(f)
+index = None
 
 
-def add_documents(chunks, filename):
+def add_documents(chunks, source):
 
-    global documents
-
-    from app.services.embeddings import embed_texts
+    global index
 
     embeddings = embed_texts(chunks)
 
@@ -33,34 +18,38 @@ def add_documents(chunks, filename):
         embeddings
     ).astype("float32")
 
+    if index is None:
+
+        dimension = embeddings.shape[1]
+
+        index = faiss.IndexFlatL2(
+            dimension
+        )
+
     index.add(embeddings)
 
     for chunk in chunks:
 
         documents.append({
             "text": chunk,
-            "source": filename
+            "source": source
         })
 
-    faiss.write_index(
-        index,
-        INDEX_PATH
-    )
 
-    with open(DOCS_PATH, "wb") as f:
-        pickle.dump(
-            documents,
-            f
-        )
+def search(query, top_k=3):
 
+    global index
 
-def search_documents(query_embedding, top_k=3):
+    if index is None:
 
-    if len(documents) == 0:
         return []
 
+    query_embedding = embed_texts(
+        [query]
+    )
+
     query_embedding = np.array(
-        [query_embedding]
+        query_embedding
     ).astype("float32")
 
     distances, indices = index.search(
@@ -75,7 +64,7 @@ def search_documents(query_embedding, top_k=3):
         if idx < len(documents):
 
             results.append(
-                documents[idx]["text"]
+                documents[idx]
             )
 
     return results
