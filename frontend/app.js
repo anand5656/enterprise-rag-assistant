@@ -119,7 +119,7 @@ async function sendMessage() {
 
         const response = await fetch(
 
-            "http://127.0.0.1:8000/api/chat",
+            "https://enterprise-rag-assistant-2d7j.onrender.com/api/chat",
 
             {
                 method: "POST",
@@ -214,7 +214,7 @@ async function uploadFile() {
 
         const response = await fetch(
 
-            "http://127.0.0.1:8000/api/upload",
+            "https://enterprise-rag-assistant-2d7j.onrender.com/api/upload",
 
             {
                 method: "POST",
