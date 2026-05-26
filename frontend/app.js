@@ -14,29 +14,20 @@ function getTime() {
 }
 
 
-function addMessage(
-    sender,
-    text
-) {
+function addMessage(sender, text) {
 
     const msg =
         document.createElement("div");
 
-    msg.classList.add(
-        "message"
-    );
+    msg.classList.add("message");
 
     if (sender === "You") {
 
-        msg.classList.add(
-            "user"
-        );
+        msg.classList.add("user");
 
     } else {
 
-        msg.classList.add(
-            "assistant"
-        );
+        msg.classList.add("assistant");
     }
 
     msg.innerHTML = `
@@ -96,6 +87,8 @@ function removeTyping() {
 }
 
 
+/* CHAT FUNCTION */
+
 async function sendMessage() {
 
     const input =
@@ -131,9 +124,7 @@ async function sendMessage() {
 
                 body: JSON.stringify({
 
-                    sessionId: "abc123",
-
-                    message: message
+                    query: message
                 })
             }
         );
@@ -144,22 +135,7 @@ async function sendMessage() {
         removeTyping();
 
         let responseText =
-            data.reply;
-
-        if (
-            data.sources &&
-            data.sources.length > 0
-        ) {
-
-            responseText +=
-                "<br><br><strong>Sources:</strong><br>";
-
-            data.sources.forEach(source => {
-
-                responseText +=
-                    `• ${source}<br>`;
-            });
-        }
+            data.answer;
 
         addMessage(
             "Assistant",
@@ -179,6 +155,8 @@ async function sendMessage() {
     }
 }
 
+
+/* FILE UPLOAD FUNCTION */
 
 async function uploadFile() {
 
