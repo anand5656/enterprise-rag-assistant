@@ -1,79 +1,50 @@
-from app.services.retrieval import retrieve_chunks
+from app.services.embeddings import embed_query
+from app.vectorstore.faiss_store import search_documents
 
-from app.prompts.prompt_template import build_prompt
+from groq import Groq
+import os
 
-from app.services.llm import generate_response
-
-from app.utils.memory import (
-    get_conversation_history,
-    update_memory
+client = Groq(
+    api_key=os.getenv("GROQ_API_KEY")
 )
 
 
-def chat(session_id, message):
-   
+def chat(query: str):
 
-    # Retrieve relevant chunks
-    retrieved_chunks = retrieve_chunks(message)
+    query_embedding = embed_query(query)
+
+    retrieved_chunks = search_documents(
+        query_embedding
+    )
 
     if not retrieved_chunks:
 
-        return {
+        return "No relevant information found in uploaded documents."
 
-            "reply": (
-                "No documents uploaded yet. "
-                "Please upload a PDF, DOCX, or TXT file first."
-                    ),
-
-                    "sources": [],
-
-                    "retrievedChunks": 0,
-
-                    "tokensUsed": 0
-                }
-                
-
-    # Build context
-    context = "\n".join([
-        chunk["text"]
-        for chunk in retrieved_chunks
-    ])
-
-    # Get previous conversation
-    history = get_conversation_history(session_id)
-
-    # Build final prompt
-    prompt = build_prompt(
-        context=context,
-        history=history,
-        question=message
+    context = "\n".join(
+        retrieved_chunks
     )
 
-    # Generate LLM response
-    response = generate_response(prompt)
+    prompt = f"""
+Answer the question using the context below.
 
-    # Save conversation memory
-    update_memory(
-        session_id,
-        message,
-        response
+Context:
+{context}
+
+Question:
+{query}
+"""
+
+    completion = client.chat.completions.create(
+        model="llama3-8b-8192",
+        messages=[
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ]
     )
 
-    # Source tracking
-    sources = []
+    answer = completion.choices[0].message.content
 
-    for chunk in retrieved_chunks:
-
-        source = chunk["source"]
-
-        sources.append(
-            f"{source['source']} "
-            f"(Chunk {source['chunk']})"
-        )
-
-    return {
-        "reply": response,
-        "sources": list(set(sources)),
-        "retrievedChunks": len(retrieved_chunks),
-        "tokensUsed": 0
-    }
+    return answer
