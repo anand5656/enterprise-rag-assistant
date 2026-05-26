@@ -17,10 +17,7 @@ def add_documents(
 
     global search_index
 
-    texts = [
-        chunk
-        for chunk in chunks
-    ]
+    texts = chunks
 
     embeddings = embed_documents(
         texts
@@ -33,27 +30,26 @@ def add_documents(
 
     dimension = embeddings.shape[1]
 
+
     if search_index is None:
 
         search_index = faiss.IndexFlatL2(
             dimension
         )
 
+
     search_index.add(
         embeddings
     )
 
 
-    for chunk, source in zip(
-        chunks,
-        sources
-    ):
+    for i, chunk in enumerate(chunks):
 
         metadata_store.append({
 
             "text": chunk,
 
-            "source": source["source"],
+            "source": sources[i],
 
-            "chunk": source["chunk"]
+            "chunk": i + 1
         })
