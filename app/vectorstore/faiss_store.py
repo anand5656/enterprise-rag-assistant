@@ -5,13 +5,12 @@ from app.services.embeddings import (
     embed_documents
 )
 
-
 search_index = None
 
 metadata_store = []
 
 
-def add_to_index(
+def add_documents(
     chunks,
     sources
 ):
