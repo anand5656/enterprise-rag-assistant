@@ -1,50 +1,32 @@
-from app.services.embeddings import embed_query
-from app.vectorstore.faiss_store import search_documents
-
-from groq import Groq
-import os
-
-client = Groq(
-    api_key=os.getenv("GROQ_API_KEY")
+from app.services.retrieval import (
+    retrieve_chunks
 )
 
+def chat(message):
 
-def chat(query: str):
-
-    query_embedding = embed_query(query)
-
-    retrieved_chunks = search_documents(
-        query_embedding
+    results = retrieve_chunks(
+        message
     )
 
-    if not retrieved_chunks:
+    if not results:
 
-        return "No relevant information found in uploaded documents."
+        return {
+            "reply":
+                "No documents uploaded yet.",
+            "sources": []
+        }
 
     context = "\n".join(
-        retrieved_chunks
+
+        [r["text"] for r in results]
     )
 
-    prompt = f"""
-Answer the question using the context below.
+    return {
 
-Context:
-{context}
+        "reply":
+            f"Relevant information:\n\n{context[:1000]}",
 
-Question:
-{query}
-"""
+        "sources":
 
-    completion = client.chat.completions.create(
-        model="llama3-8b-8192",
-        messages=[
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ]
-    )
-
-    answer = completion.choices[0].message.content
-
-    return answer
+            [r["source"] for r in results]
+    }

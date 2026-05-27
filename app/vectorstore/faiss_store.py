@@ -1,46 +1,43 @@
 import faiss
 import numpy as np
 
-from app.services.embeddings import embed_texts
+from app.services.embeddings import (
+    embed_texts
+)
 
 documents = []
 
-index = None
+dimension = 384
 
+index = faiss.IndexFlatL2(
+    dimension
+)
 
-def add_documents(chunks, source):
+def add_documents(chunks, filename):
 
-    global index
+    global documents
 
-    embeddings = embed_texts(chunks)
+    embeddings = embed_texts(
+        chunks
+    )
 
-    embeddings = np.array(
+    vectors = np.array(
         embeddings
     ).astype("float32")
 
-    if index is None:
-
-        dimension = embeddings.shape[1]
-
-        index = faiss.IndexFlatL2(
-            dimension
-        )
-
-    index.add(embeddings)
+    index.add(vectors)
 
     for chunk in chunks:
 
         documents.append({
-            "text": chunk,
-            "source": source
-        })
 
+            "text": chunk,
+            "source": filename
+        })
 
 def search(query, top_k=3):
 
-    global index
-
-    if index is None:
+    if len(documents) == 0:
 
         return []
 
@@ -48,12 +45,12 @@ def search(query, top_k=3):
         [query]
     )
 
-    query_embedding = np.array(
+    query_vector = np.array(
         query_embedding
     ).astype("float32")
 
     distances, indices = index.search(
-        query_embedding,
+        query_vector,
         top_k
     )
 
