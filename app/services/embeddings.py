@@ -1,13 +1,18 @@
-from sentence_transformers import SentenceTransformer
+from sklearn.feature_extraction.text import TfidfVectorizer
 
-model = SentenceTransformer(
-    "all-MiniLM-L6-v2"
-)
+vectorizer = TfidfVectorizer()
+
+documents = []
 
 def embed_texts(texts):
 
-    embeddings = model.encode(
-        texts
+    global documents
+    global vectorizer
+
+    documents.extend(texts)
+
+    vectors = vectorizer.fit_transform(
+        documents
     )
 
-    return embeddings.tolist()
+    return vectors.toarray()[-len(texts):]
